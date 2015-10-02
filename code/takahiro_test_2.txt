@@ -1,0 +1,102 @@
+/*
+    This file is an ImageJ macro script that crops images.
+
+    There are a number of hard-coded configuration parameters at the top of this file.
+        TODO:  make the parameters readable from the command line.
+
+    The script expects several file paths as inputs:
+        (1) path to a directory containing all and only the images to be cropped
+        (2) path to a file specifying information about how the images should be cropped
+
+	The coordinate input file (2) should be a .txt file with the following format:
+
+			image_name,upper_left_x,upper_left_y
+
+	For example, a file containing info for two images to be processed would look like:
+	
+			image_1.svs,2003,143
+			image_2.svs,8301,3339
+
+    The "upper_left_x" value defines the x-value of the upper-left region to be cropped.
+        (Mutatis mutandis for "upper_left_y".)
+
+    The script outputs one .tiff image for each input image.  The file name of the output
+        image is identical to that of the input image, with "_cropped.tif" appended to
+        the filename. 
+*/
+
+///////////////////////////////////////////////////////////////////////////////////////
+//  BEGIN CONFIGURATION
+///////////////////////////////////////////////////////////////////////////////////////
+
+//	turn debugging on/off
+DEBUG = false;
+
+//	Specify the location of the coordinate file
+path_to_coordinate_file = "/Users/leyshock/Desktop/takahiro/data/test_input.txt";
+
+//	Specify the path to directory containing the input images
+path_to_image_files = "/Users/leyshock/Desktop/takahiro/data/test_data/";
+
+//	specify number of images to process
+num_images = 2;
+
+//	specify extents of images to be extracted
+x_extent = 900;
+y_extent = 500;
+
+///////////////////////////////////////////////////////////////////////////////////////
+//  END CONFIGURATION
+///////////////////////////////////////////////////////////////////////////////////////
+
+//	open coordinate file
+coordinate_file_raw = File.openAsString(path_to_coordinate_file);
+coordinate_array = split(coordinate_file_raw);  // uses space, newline, and tab as default
+num_image_records = lengthOf(coordinate_array);
+print(num_image_records, "records read from coordinate specification file");
+
+//	get list of .svs files in the directory
+image_files = getFileList(path_to_image_files);
+num_image_files = lengthOf(image_files);
+print(num_image_files, "image files found");
+
+//	error-check
+if(num_image_records != num_image_files)  {
+	print("Error:  mismatch in number of image records and images");
+}	//	fi
+
+for(i = 0; i < num_images; ++i)	{
+	//	extract relevant starting coordinates from record
+	current_record = split(coordinate_array[i], ",");
+	x_upper_left = current_record[0];
+	y_upper_left = current_record[1];
+		
+	if(DEBUG)	{
+		print("\nx_upper_left, record", i, ": ");
+		print(x_upper_left);		
+		print("\ny_upper_left, record", i, ": ");
+		print(y_upper_left);
+	}	//	fi(DEBUG)
+
+    //	construct path to next image
+	current_image_file = path_to_image_files + image_files[i];
+    bioformats_command = "open=" + current_image_file 
+        + " autoscale color_mode=Default view=[Standard ImageJ] stack_order=Default series_1";
+    if(DEBUG)   {
+    	print(bioformats_command);
+    }   //  fi
+
+	run("Bio-Formats Importer", bioformats_command);
+
+    //  define cropping boundaries and crop
+    makeRectangle(x_upper_left, y_upper_left, x_extent, y_extent);
+    run("Crop");
+
+	destination_image_file = current_image_file + "_cropped";
+    print("Writing cropped image file:  " + destination_image_file);
+	saveAs("tiff", destination_image_file);
+	close();
+
+}	//	for i
+
+
