@@ -38,9 +38,6 @@ path_to_coordinate_file = "/Users/leyshock/Desktop/takahiro/data/test_input.txt"
 //	Specify the path to directory containing the input images
 path_to_image_files = "/Users/leyshock/Desktop/takahiro/data/test_data/";
 
-//	specify number of images to process
-num_images = 2;
-
 //	specify extents of images to be extracted
 x_extent = 900;
 y_extent = 500;
@@ -65,7 +62,7 @@ if(num_image_records != num_image_files)  {
 	print("Error:  mismatch in number of image records and images");
 }	//	fi
 
-for(i = 0; i < num_images; ++i)	{
+for(i = 0; i < num_image_files; ++i)	{
 	//	extract relevant starting coordinates from record
 	current_record = split(coordinate_array[i], ",");
 	x_upper_left = current_record[0];
