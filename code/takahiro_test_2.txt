@@ -65,8 +65,8 @@ if(num_image_records != num_image_files)  {
 for(i = 0; i < num_image_files; ++i)	{
 	//	extract relevant starting coordinates from record
 	current_record = split(coordinate_array[i], ",");
-	x_upper_left = current_record[0];
-	y_upper_left = current_record[1];
+	x_upper_left = current_record[1];
+	y_upper_left = current_record[2];
 		
 	if(DEBUG)	{
 		print("\nx_upper_left, record", i, ": ");
