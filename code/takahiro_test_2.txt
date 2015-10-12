@@ -8,14 +8,19 @@
         (1) path to a directory containing all and only the images to be cropped
         (2) path to a file specifying information about how the images should be cropped
 
-	The coordinate input file (2) should be a .txt file with the following format:
+	The coordinate input file (2) should be a .csv file with the following format:
 
-			image_name,upper_left_x,upper_left_y
+			image_name,,,,,,,,,,upper_left_x,upper_left_y
+
+    (Assuming image_name has index 0, upper_left_x should have index 10, and
+        upper_left_y should have index 11.)  This is the format currently used by other
+        upstream tools in the pipeline.  Th tools generate an Excel spreadsheet which can be
+        saved as a .csv file with the format above.
 
 	For example, a file containing info for two images to be processed would look like:
 	
-			image_1.svs,2003,143
-			image_2.svs,8301,3339
+			image_1.svs,,,,,,,,,,2003,143
+			image_2.svs,,,,,,,,,,8301,3339
 
     The "upper_left_x" value defines the x-value of the upper-left region to be cropped.
         (Mutatis mutandis for "upper_left_y".)
@@ -33,14 +38,17 @@
 DEBUG = false;
 
 //	Specify the location of the coordinate file
-path_to_coordinate_file = "/Users/leyshock/Desktop/takahiro/data/test_input.txt";
+//path_to_coordinate_file = "/Users/leyshock/Desktop/takahiro/data/Alignment_hPDAC3B_truncated.csv";
+path_to_coordinate_file = "/Users/leyshock/Desktop/takahiro/data/test_data_2/Alignment_Post3-1A.csv";
 
 //	Specify the path to directory containing the input images
-path_to_image_files = "/Users/leyshock/Desktop/takahiro/data/test_data/";
+//      For safety's sake best keep the "/" at the end of the path string
+//path_to_image_files = "/Users/leyshock/Desktop/takahiro/data/test_data/";
+path_to_image_files = "/Users/leyshock/Desktop/takahiro/data/test_data_2/inputs/";
 
 //	specify extents of images to be extracted
-x_extent = 900;
-y_extent = 500;
+x_extent = 3000;
+y_extent = 2000;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //  END CONFIGURATION
@@ -50,6 +58,8 @@ y_extent = 500;
 coordinate_file_raw = File.openAsString(path_to_coordinate_file);
 coordinate_array = split(coordinate_file_raw);  // uses space, newline, and tab as default
 num_image_records = lengthOf(coordinate_array);
+//  first line is a header
+num_image_records = (num_image_records - 1);
 print(num_image_records, "records read from coordinate specification file");
 
 //	get list of .svs files in the directory
@@ -64,9 +74,12 @@ if(num_image_records != num_image_files)  {
 
 for(i = 0; i < num_image_files; ++i)	{
 	//	extract relevant starting coordinates from record
+    //      we add one to the index because the first line of the coordinate 
+    //      specification file is a header
+    coordinate_file_index = i + 1;
 	current_record = split(coordinate_array[i], ",");
-	x_upper_left = current_record[1];
-	y_upper_left = current_record[2];
+	x_upper_left = current_record[10];
+	y_upper_left = current_record[11];
 		
 	if(DEBUG)	{
 		print("\nx_upper_left, record", i, ": ");
