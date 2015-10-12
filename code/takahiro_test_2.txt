@@ -35,7 +35,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 //	turn debugging on/off
-DEBUG = false;
+DEBUG = true;
 
 //	Specify the location of the coordinate file
 //path_to_coordinate_file = "/Users/leyshock/Desktop/takahiro/data/Alignment_hPDAC3B_truncated.csv";
@@ -77,11 +77,12 @@ for(i = 0; i < num_image_files; ++i)	{
     //      we add one to the index because the first line of the coordinate 
     //      specification file is a header
     coordinate_file_index = i + 1;
-	current_record = split(coordinate_array[i], ",");
+	current_record = split(coordinate_array[coordinate_file_index], ",");
 	x_upper_left = current_record[10];
 	y_upper_left = current_record[11];
 		
 	if(DEBUG)	{
+        print("\nCurrent record file name: ", current_record[0]);
 		print("\nx_upper_left, record", i, ": ");
 		print(x_upper_left);		
 		print("\ny_upper_left, record", i, ": ");
@@ -109,4 +110,4 @@ for(i = 0; i < num_image_files; ++i)	{
 
 }	//	for i
 
-
+print("Macro complete.  Have a good day.");
