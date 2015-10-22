@@ -103,6 +103,10 @@ for(i = 0; i < num_image_files; ++i)	{
     makeRectangle(x_upper_left, y_upper_left, x_extent, y_extent);
     run("Crop");
 
+    //  stack to RGB
+    run("Stack to RGB");
+
+    //  save file as tiff
 	destination_image_file = current_image_file + "_cropped";
     print("Writing cropped image file:  " + destination_image_file);
 	saveAs("tiff", destination_image_file);
